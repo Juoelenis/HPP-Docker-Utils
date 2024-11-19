@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -e
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+# shellcheck source=example.env
+source "${SCRIPT_DIR}/../.env"
+# shellcheck source=scripts/functions.sh
+source "${SCRIPT_DIR}/functions.sh"
+
+if [ -z "$1" ]
+then
+  CONTAINER=nextcloud
+else
+  CONTAINER=$1
+fi
+
+function occ() {
+    docker_compose exec "$CONTAINER" sudo -E -u www-data "./occ" "$@"
+}
+
+echo "Setting up ONLYOFFICE with onlyoffice$DOMAIN_SUFFIX on $CONTAINER"
+docker_compose up -d onlyoffice
+occ app:enable onlyoffice --force
+occ config:app:set onlyoffice DocumentServerUrl --value="$PROTOCOL://onlyoffice$DOMAIN_SUFFIX"
+occ config:app:set onlyoffice jwt_secret --value="secret"
+occ config:app:set onlyoffice DocumentServerInternalUrl --value="http://onlyoffice/"
+occ config:app:set onlyoffice StorageUrl --value="http://${CONTAINER}${DOMAIN_SUFFIX}/"
+occ onlyoffice:documentserver --check
+
+
+docker_compose exec onlyoffice /var/www/onlyoffice/documentserver/npm/json -f /etc/onlyoffice/documentserver/local.json 'services.CoAuthoring.secret.session.string'

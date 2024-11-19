@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -e
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+# shellcheck source=example.env
+source "${SCRIPT_DIR}/../.env"
+# shellcheck source=scripts/functions.sh
+source "${SCRIPT_DIR}/functions.sh"
+
+if [ -z "$1" ]
+  then
+    echo "Usage $0 CONTAINER"
+	exit 1
+fi
+
+CONTAINER=$1
+
+function occ() {
+    docker_compose exec "$CONTAINER" sudo -E -u www-data "./occ" "$@"
+}
+
+
+
+echo "Setting up Collabora with collabora$DOMAIN_SUFFIX on $CONTAINER"
+docker_compose up -d collabora
+occ app:enable richdocuments --force
+occ config:app:set richdocuments wopi_url --value="${PROTOCOL:-http}://collabora${DOMAIN_SUFFIX}"
+occ config:app:set richdocuments public_wopi_url --value="${PROTOCOL:-http}://collabora${DOMAIN_SUFFIX}"
+occ config:app:set richdocuments disable_certificate_verification --value="yes"
+occ config:system:set allow_local_remote_servers --value true --type bool
+occ config:system:set gs.trustedHosts 0 --value "*${DOMAIN_SUFFIX}"
+occ richdocuments:activate-config

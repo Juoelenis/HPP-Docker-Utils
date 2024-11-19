@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+# shellcheck source=example.env
+source "${SCRIPT_DIR}/../.env"
+# shellcheck source=scripts/functions.sh
+source "${SCRIPT_DIR}/functions.sh"
+
+if ! [ -x "$(command -v mkcert)" ]; then
+  echo 'Error: mkcert is not installed.' >&2
+  exit 1
+fi
+
+CERT_DIR="${SCRIPT_DIR}/../data/ssl/"
+
+awk '$1 == "-"{ if (key == "aliases:") print $NF; next } {key=$1}' docker-compose.yml | \
+	sed "s/\${DOMAIN_SUFFIX}/${DOMAIN_SUFFIX}/" | \
+	while read -r line;
+	do
+        mkcert -cert-file "${CERT_DIR}${line}.crt" -key-file "${CERT_DIR}${line}.key" "${line}"
+	done
