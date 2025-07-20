@@ -1,5 +1,6 @@
 ![docker-icon](https://github.com/user-attachments/assets/47a3dacd-d3b2-4bc5-847e-fc5f5324468d)
- ![hpp logo](https://github.com/user-attachments/assets/5ebb821d-ac6a-4822-9336-cc7eb2de58a7)
+<img width="532" height="489" alt="hpp-n-l-p" src="https://github.com/user-attachments/assets/037ba583-720d-4b7c-8711-819f6335ca8c" />
+
 
 
 # HPP + Docker
