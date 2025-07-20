@@ -3,7 +3,7 @@
 
 
 # HPP + Docker
-**HPA Progress Plexus + Docker: An Old Interwebs Revival with Modern Container Technology**
+**HPA Progress Plexus + Docker: WWW Alternative available now for Docker**
 
 The "HPA Progress Plexus + Docker" project breathes new life into the world of legacy web applications by leveraging the power of modern containerization. Designed to bridge the gap between the nostalgia of the early web era and today's cutting-edge technology, this project enables developers to seamlessly deploy, scale, and manage old-school web applications with Docker containers.
 
